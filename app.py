@@ -11,6 +11,8 @@ import requests
 import joblib
 from datetime import date, timedelta
 from prophet import Prophet
+import os
+import gdown
 
 # -----------------------------
 # Page setup
@@ -819,3 +821,4 @@ with tab_models:
         st.pyplot(fig)
     else:
         st.info("This Random Forest model does not expose feature_importances_.")
+
