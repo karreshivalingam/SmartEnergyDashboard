@@ -1,0 +1,12 @@
+# Ignore large datasets
+data/*.csv
+data/*.parquet
+data/*.zip
+
+# Ignore cache
+__pycache__/
+.streamlit/
+
+# Ignore environments
+env/
+venv/
