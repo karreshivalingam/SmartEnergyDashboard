@@ -9,10 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import requests
 import joblib
-from datetime import date, timedelta
-from prophet import Prophet
 import os
 import gdown
+from datetime import date, timedelta
+from prophet import Prophet
 
 # -----------------------------
 # Page setup
@@ -30,7 +30,15 @@ st.caption("Phase 7 Dashboard: Historical + Forecasting (RF+API / Prophet+Climat
 # Paths
 # -----------------------------
 DATA_PATH = "data/Merged_SMARD_Weather_Daily.csv"
-RF_PATH = "models/rf_model.joblib"
+
+# IMPORTANT CHANGE:
+# RF model is too big for GitHub → download from Google Drive automatically
+MODEL_DIR = "models"
+RF_PATH = os.path.join(MODEL_DIR, "rf_model.joblib")
+
+# Your Google Drive FILE ID (from your link)
+RF_MODEL_FILE_ID = "1MzCMSPxHdIBRUrCf9SpoI2fH1k-F7201"
+RF_MODEL_URL = f"https://drive.google.com/uc?id={RF_MODEL_FILE_ID}"
 
 # =========================================================
 # 1) Load data & model
@@ -41,8 +49,17 @@ def load_data(path=DATA_PATH):
     df["Date"] = pd.to_datetime(df["Date"])
     return df.sort_values("Date").reset_index(drop=True)
 
+# IMPORTANT CHANGE:
+# if model file doesn't exist, download it from Google Drive then load it
 @st.cache_resource
 def load_rf(path=RF_PATH):
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
+    if not os.path.exists(path):
+        st.info("Downloading Random Forest model from Google Drive (first run only)...")
+        # fuzzy=True is robust for Drive downloads
+        gdown.download(RF_MODEL_URL, path, quiet=False, fuzzy=True)
+
     return joblib.load(path)
 
 data = load_data()
@@ -821,4 +838,3 @@ with tab_models:
         st.pyplot(fig)
     else:
         st.info("This Random Forest model does not expose feature_importances_.")
-
